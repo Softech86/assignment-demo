@@ -31,3 +31,12 @@ export const mockData = [
         },
     }
 ]
+
+export const getQuestionById = id => {
+    return {
+        ...JSON.parse(JSON.stringify(mockData[0].question)),
+        content: mockData[0].question.content.replace(/爸爸/g,
+            '妈妈 爷爷 奶奶 外公 外婆'.split(' ')[Math.floor(Math.random() * 5)]
+        ),
+    }
+}

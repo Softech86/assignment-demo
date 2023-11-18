@@ -8,5 +8,5 @@ export const clickSelf = (callback, ...customParam) => (event) => {
 
 export const stopPropagation = (callback, ...customParam) => (event) => {
     event.stopPropagation();
-    callback(...customParam);
+    callback?.(...customParam);
 };
