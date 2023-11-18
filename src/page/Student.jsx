@@ -2,40 +2,8 @@ import TextBox from "../component/TextBox";
 import {useEffect, useState} from "react";
 import Quiz from "../component/Quiz";
 import Chat from "../component/Chat";
-
-const fetchedData = [
-    {
-        id: 'question-1',
-        type: 1001,
-        question: {
-            content: "爸爸的爸爸叫什么？",
-            options: [
-                {
-                    id: 1,
-                    content: "爷爷",
-                },
-                {
-                    id: 2,
-                    content: "奶奶",
-                },
-                {
-                    id: 3,
-                    content: "外公",
-                },
-                {
-                    id: 4,
-                    content: "外婆",
-                },
-            ],
-            answer: 1,
-        },
-        selection: {
-            startPos: 0,
-            endPos: 10,
-            text: 'Hello World'
-        },
-    }
-]
+import {mockData} from "../mock";
+import {clickSelf, stopPropagation} from "../util";
 
 const QuestionType = Object.freeze({
     Quiz: 1001,
@@ -65,14 +33,14 @@ const Student = () => {
     const [selection, setSelection] = useState([])
 
     useEffect(() => {
-        setQuestionList(fetchedData.map((item) => {
+        setQuestionList(mockData.map((item) => {
             return {
                 id: item.id,
                 type: item.type,
                 question: item.question,
             }
         }))
-        setSelection(fetchedData.map((item) => {
+        setSelection(mockData.map((item) => {
             return {
                 ...item.selection,
                 questionId: item.id,
@@ -121,18 +89,12 @@ const Student = () => {
     }
 
     const clearSelection = () => {
+        console.log('clearSelection')
         setSelection((prevSelection) =>
             prevSelection.map((item) => ({...item, isSelected: false}))
         );
     }
 
-    const clickSelf = (callback, ...customParam) => (event) => {
-        if (event.target === event.currentTarget) {
-            callback(...customParam);
-        } else {
-            console.warn('clickSelf: event.target !== event.currentTarget')
-        }
-    };
 
     const handleTextBoxChatClick = (item, index) => {
         const newQuestion = createQuestion(QuestionType.Chat)
@@ -149,10 +111,13 @@ const Student = () => {
                     return {
                         ...selectionItem,
                         questionId: newQuestion.id,
-                        isSelected: false,
+                        isSelected: true,
                     }
                 } else {
-                    return selectionItem;
+                    return {
+                        ...selectionItem,
+                        isSelected: false,
+                    };
                 }
             })
         })
@@ -160,7 +125,9 @@ const Student = () => {
 
     return <div>
         <div className="flex flex-row h-screen">
-            <div className="w-1/2 bg-blue-200">
+            <div className="w-1/2 pl-4 pr-4"
+                 onClick={clickSelf(clearSelection)}
+            >
                 <TextBox
                     selection={selection}
                     onSelectionChange={handleSelectionClick}
@@ -170,14 +137,14 @@ const Student = () => {
                         return item.questionId ? <div>有题目</div> : [
                             <button
                                 className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                                onClick={() => handleTextBoxChatClick(item, index)}>
+                                onClick={stopPropagation(handleTextBoxChatClick, item, index)}>
                                 Chat
                             </button>
                         ]
                     }}
                 </TextBox>
             </div>
-            <div className="w-1/2 bg-white"
+            <div className="w-1/2" style={{backgroundColor: '#F4F4F9'}}
                  onClick={clickSelf(clearSelection)}
             >{
                 questionList.map((item) => {
@@ -186,7 +153,7 @@ const Student = () => {
                         selectionItem.questionId === item.id)?.isSelected
                     const Component = QuestionComponentMap[item.type]
                     return <Component
-                        className={"border-2  rounded-lg p-4 m-4 " +
+                        className={"border-2 bg-white rounded-lg p-4 m-4 " +
                             (isSelected ? "border-yellow-400" : "border-gray-100")
                         }
                         onClick={clickSelf(handleQuestionClick, item, isSelected)}

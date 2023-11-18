@@ -12,7 +12,10 @@ const TextBox = ({selection, children, onSelectionChange, onSelectionCreate}) =>
         (selection || []).map((item, index) => {
             return (
                 // 上下m-8，左右m-0
-                <div className="mt-8 mb-8 ml-0 mr-0" id={item.id}>
+                <div className="mt-8 mb-8 ml-0 mr-0" id={item.id}
+                     style={{backgroundColor: '#fafaff'}}
+                     onClick={() => handleItemClick(index, !item.isSelected)}
+                >
                     <div
                         style={{
                             opacity: item.isSelected ? 1 : 0.5,
@@ -20,10 +23,9 @@ const TextBox = ({selection, children, onSelectionChange, onSelectionCreate}) =>
                     >{children(item, index)}</div>
 
                     <div
-                        onClick={() => handleItemClick(index, !item.isSelected)}
                         className="inline-block"
                         style={{
-                            backgroundColor: item.isSelected ? 'yellow' : 'white',
+                            backgroundColor: item.isSelected ? 'yellow' : '',
                         }}
                     >
                         <div>start: {item.startPos}</div>
